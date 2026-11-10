@@ -68,7 +68,8 @@ Requests and your key only ever go to the base URL, never to a server named in t
 ## Links
 
 - [siterender.cc](https://siterender.cc)
-- [Docs](https://siterender.cc/docs)
+- [CLI docs](https://siterender.cc/docs/cli)
+- [API docs](https://siterender.cc/docs)
 - [API spec](https://livewebdata.com/openapi.json)
 
 ## License
