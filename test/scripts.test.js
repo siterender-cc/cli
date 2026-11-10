@@ -43,6 +43,11 @@ describe("release plan", () => {
     assert.deepEqual(planRelease({ version: "0.1.0", npmVersions: null, lastTag: null, changed: true }).publish, false);
   });
 
+  it("after the hand-made placeholder 0.0.0 the workflow publishes package.json's version, changed or not", () => {
+    assert.deepEqual(planRelease({ version: "0.1.0", npmVersions: ["0.0.0"], lastTag: null, changed: false }), { publish: true, tag: true, version: "0.1.0", reason: "v0.1.0 (package.json) is newer than npm and the tags" });
+    assert.equal(planRelease({ version: "0.1.0", npmVersions: ["0.0.0", "0.1.0"], lastTag: "v0.1.0", changed: false }).publish, false);
+  });
+
   it("tags a first version published by hand, then releases the next patch on a change", () => {
     assert.deepEqual(planRelease({ version: "0.1.0", npmVersions: ["0.1.0"], lastTag: null, changed: false }), { publish: false, tag: true, version: "0.1.0", reason: "v0.1.0 is on npm without a tag: tagging it" });
     assert.deepEqual(planRelease({ version: "0.1.0", npmVersions: ["0.1.0"], lastTag: "v0.1.0", changed: true }).version, "0.1.1");
