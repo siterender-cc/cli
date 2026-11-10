@@ -8,8 +8,8 @@ It is the command line client for the [Live Web Data API](https://siterender.cc)
 ## Quick start
 
 ```bash
-npx siterender login                                   # paste your API key (not echoed)
-npx siterender fetch https://example.com -o text       # the page as Markdown
+npx @siterender-cc/cli login                                   # paste your API key (not echoed)
+npx @siterender-cc/cli fetch https://example.com -o text       # the page as Markdown
 ```
 
 Get a key at [siterender.cc](https://siterender.cc). Node.js 18 or later.
@@ -17,7 +17,7 @@ Get a key at [siterender.cc](https://siterender.cc). Node.js 18 or later.
 ## Install
 
 ```bash
-npm install -g siterender
+npm install -g @siterender-cc/cli
 siterender --help
 ```
 

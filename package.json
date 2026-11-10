@@ -1,5 +1,5 @@
 {
-  "name": "siterender",
+  "name": "@siterender-cc/cli",
   "version": "0.1.0",
   "description": "SiteRender CLI: live web pages as clean Markdown, text or HTML in your terminal, through the Live Web Data API. The commands follow the live API spec.",
   "keywords": [
