@@ -42,7 +42,7 @@ A fetch that is still running after about 100 seconds is collected automatically
 [https://livewebdata.com/openapi.json](https://livewebdata.com/openapi.json), cached for an hour. When the API gains a field or an endpoint, the
 option or command is there on your next run, without updating the CLI. Offline, it uses the last cached
 copy, then the copy bundled with the installed version (`siterender spec` shows which one; `--offline` skips the
-download). A daily job here publishes a new version whenever the API spec changed.
+download). An hourly job here publishes a new version whenever the API spec changed.
 
 ## Configuration
 

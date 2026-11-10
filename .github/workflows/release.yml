@@ -1,4 +1,4 @@
-# Daily (and by hand): pull the live API spec. Then, when the spec or a shipped file changed since the last release,
+# Hourly (and by hand): pull the live API spec. Then, when the spec or a shipped file changed since the last release,
 # publish the next version to npm and tag a GitHub release. npm trusted publishing (OIDC): no token is stored.
 # Installed CLIs already follow the live spec at run time; a release refreshes the copy they fall back to.
 # The last step re-enables this workflow on every run: GitHub turns a schedule off after 60 days without repo activity.
@@ -6,7 +6,7 @@ name: release
 
 on:
   schedule:
-    - cron: "17 5 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -63,7 +63,7 @@ jobs:
         run: |
           git push origin HEAD:main "v$VERSION"
           gh release create "v$VERSION" --title "v$VERSION" --generate-notes --verify-tag
-      - name: Keep the daily schedule alive
+      - name: Keep the schedule alive
         if: always()
         continue-on-error: true
         env:
