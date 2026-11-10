@@ -1,0 +1,14 @@
+{
+  "name": "SiteRender",
+  "tagline": "What a page sends, what a browser builds, and which one you actually need.",
+  "domain": "siterender.cc",
+  "bin": "siterender",
+  "npm": "siterender",
+  "org": "siterender-cc",
+  "repo": "cli",
+  "siteUrl": "https://siterender.cc",
+  "docsUrl": "https://siterender.cc/docs",
+  "apiName": "Live Web Data API",
+  "apiBaseUrl": "https://livewebdata.com/api",
+  "specUrl": "https://livewebdata.com/openapi.json"
+}

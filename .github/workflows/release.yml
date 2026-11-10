@@ -1,0 +1,63 @@
+# Daily (and by hand): pull the live API spec. Then, when the spec or a shipped file changed since the last release,
+# publish the next version to npm and tag a GitHub release. npm trusted publishing (OIDC): no token is stored.
+# Installed CLIs already follow the live spec at run time; a release refreshes the copy they fall back to.
+name: release
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: npm 11.5.1 or later (trusted publishing)
+        run: npm install -g npm@^11.5.1
+      - name: Pull the live API spec
+        if: github.event_name != 'push'
+        run: node scripts/sync-spec.js
+      - name: Test
+        run: npm test
+      - name: Plan
+        id: plan
+        run: node scripts/release.js plan | tee -a "$GITHUB_OUTPUT"
+      - name: Commit and tag
+        if: steps.plan.outputs.tag == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm version "$VERSION" --no-git-tag-version --allow-same-version
+          git add -A
+          git diff --cached --quiet || git commit -m "release: v$VERSION"
+          git tag -a "v$VERSION" -m "v$VERSION"
+      - name: Publish to npm
+        if: steps.plan.outputs.publish == 'true'
+        run: npm publish --provenance --access public
+      - name: Push and create the GitHub release
+        if: steps.plan.outputs.tag == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git push origin HEAD:main "v$VERSION"
+          gh release create "v$VERSION" --title "v$VERSION" --generate-notes --verify-tag
