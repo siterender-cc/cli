@@ -19,8 +19,9 @@ import { fileURLToPath } from "node:url";
  * @property {string} repo        GitHub repo in the org
  * @property {string} siteUrl
  * @property {string} docsUrl
- * @property {string} apiName     "Live Web Data API"
- * @property {string} apiBaseUrl  where requests (and the key) go
+ * @property {string} apiName     e.g. "FetchMCP API"
+ * @property {string} envPrefix   e.g. "FETCHMCP": FETCHMCP_API_KEY, FETCHMCP_API_BASE_URL, FETCHMCP_SPEC_URL
+ * @property {string} apiBaseUrl  where requests (and the key) go, on the site's own domain
  * @property {string} specUrl     where the commands come from
  */
 
@@ -45,6 +46,20 @@ export const BUNDLED_SPEC = join(ROOT, "openapi.json");
 export function envValue(/** @type {Env} */ env, /** @type {string[]} */ ...names) {
   for (const name of names) if (env[name]) return env[name];
   return undefined;
+}
+
+/**
+ * The environment variables of each setting, in the order they are read. The brand's own come first and are the only
+ * ones help and errors name; the others are fallbacks, so a setup from before the per-site names keeps working.
+ * @returns {{ apiKey: string[], baseUrl: string[], specUrl: string[] }}
+ */
+export function envNames(/** @type {Pick<Brand, "envPrefix">} */ brand) {
+  const names = (/** @type {string} */ suffix, /** @type {string[]} */ fallbacks) => [...new Set([brand.envPrefix, ...fallbacks].map((p) => `${p}_${suffix}`))];
+  return {
+    apiKey: names("API_KEY", ["LIVE_WEB_DATA", "TENEO"]),
+    baseUrl: names("API_BASE_URL", ["LIVE_WEB_DATA", "TENEO"]),
+    specUrl: names("SPEC_URL", ["LIVE_WEB_DATA"]),
+  };
 }
 
 const home = (/** @type {Env} */ env) => env.HOME || homedir();
@@ -90,13 +105,14 @@ export function removeApiKey(/** @type {string} */ file) {
 }
 
 /**
- * The key, in this order: --api-key, LIVE_WEB_DATA_API_KEY, the legacy TENEO_API_KEY, the saved key.
+ * The key, in this order: --api-key, <envPrefix>_API_KEY, LIVE_WEB_DATA_API_KEY, the legacy TENEO_API_KEY, the saved
+ * key. `from` names where it came from: the flag, the variable that was set, or the config file.
  * @returns {{ apiKey?: string, from?: string }}
  */
-export function resolveApiKey(/** @type {string | undefined} */ flag, /** @type {Env} */ env, /** @type {string} */ bin) {
+export function resolveApiKey(/** @type {string | undefined} */ flag, /** @type {Env} */ env, /** @type {Pick<Brand, "bin" | "envPrefix">} */ brand) {
   if (flag) return { apiKey: flag, from: "--api-key" };
-  for (const name of ["LIVE_WEB_DATA_API_KEY", "TENEO_API_KEY"]) if (env[name]) return { apiKey: env[name], from: name };
-  const file = configFile(env, bin);
+  for (const name of envNames(brand).apiKey) if (env[name]) return { apiKey: env[name], from: name };
+  const file = configFile(env, brand.bin);
   const saved = readConfig(file).apiKey;
   return saved ? { apiKey: saved, from: file } : {};
 }

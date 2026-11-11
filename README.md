@@ -3,7 +3,7 @@
 What a page sends, what a browser builds, and which one you actually need.
 
 `siterender` fetches live web pages as clean Markdown, text or HTML, straight from your terminal or your agent's shell.
-It is the command line client for the [Live Web Data API](https://livewebdata.com).
+It is the command line client for the [SiteRender API](https://siterender.cc).
 
 ## Quick start
 
@@ -39,7 +39,7 @@ A fetch that is still running after about 100 seconds is collected automatically
 ## The commands follow the live API
 
 `siterender` builds its commands and options from the API's OpenAPI document at
-[https://livewebdata.com/openapi.json](https://livewebdata.com/openapi.json), cached for an hour. When the API gains a field or an endpoint, the
+[https://siterender.cc/openapi.json](https://siterender.cc/openapi.json), cached for an hour. When the API gains a field or an endpoint, the
 option or command is there on your next run, without updating the CLI. Offline, it uses the last cached
 copy, then the copy bundled with the installed version (`siterender spec` shows which one; `--offline` skips the
 download). An hourly job here publishes a new version whenever the API spec changed.
@@ -48,9 +48,9 @@ download). An hourly job here publishes a new version whenever the API spec chan
 
 | Setting | Option | Environment | Default |
 |---|---|---|---|
-| API key | `--api-key` | `LIVE_WEB_DATA_API_KEY` | the key saved by `siterender login` (`~/.config/siterender/config.json`, mode 0600) |
-| API base URL | `--base-url` | `LIVE_WEB_DATA_API_BASE_URL` | `https://livewebdata.com/api` |
-| API spec URL | `--spec-url` | `LIVE_WEB_DATA_SPEC_URL` | `https://livewebdata.com/openapi.json` |
+| API key | `--api-key` | `SITERENDER_API_KEY` | the key saved by `siterender login` (`~/.config/siterender/config.json`, mode 0600) |
+| API base URL | `--base-url` | `SITERENDER_API_BASE_URL` | `https://siterender.cc/api` |
+| API spec URL | `--spec-url` | `SITERENDER_SPEC_URL` | `https://siterender.cc/openapi.json` |
 | Output | `-o json\|text\|<field>` | | `json` |
 | Update notice | | `SITERENDER_NO_UPDATE_NOTIFIER=1` turns it off | once a day, terminals only |
 
@@ -70,7 +70,7 @@ Requests and your key only ever go to the base URL, never to a server named in t
 - [siterender.cc](https://siterender.cc)
 - [CLI docs](https://siterender.cc/docs/cli)
 - [API docs](https://siterender.cc/docs)
-- [API spec](https://livewebdata.com/openapi.json)
+- [API spec](https://siterender.cc/openapi.json)
 
 ## License
 

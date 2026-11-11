@@ -14,7 +14,7 @@ let server;
 let served = fixtureSpec();
 before(async () => {
   server = await startServer((r, res) => {
-    if (r.url === "/livewebdata/latest") return sendJson(res, 200, { version: "0.2.0" });
+    if (r.url === "/example/latest") return sendJson(res, 200, { version: "0.2.0" });
     if (typeof served === "string") return void (res.writeHead(200, { "content-type": "text/html" }), res.end(served));
     sendJson(res, 200, served);
   });
@@ -29,7 +29,7 @@ describe("sync-spec", () => {
     assert.deepEqual(await syncSpec({ url, file }), { changed: true, version: "1.0.0" });
     assert.equal(readFileSync(file, "utf8"), normalize(fixtureSpec()));
     assert.equal((await syncSpec({ url, file })).changed, false);
-    served = { ...fixtureSpec(), info: { title: "Live Web Data API", version: "1.1.0" } };
+    served = { ...fixtureSpec(), info: { title: "Example API", version: "1.1.0" } };
     assert.deepEqual(await syncSpec({ url, file }), { changed: true, version: "1.1.0" });
     served = "<html>down</html>";
     const before = readFileSync(file, "utf8");
@@ -70,12 +70,12 @@ describe("update notice", () => {
 
   it("asks the registry at most once a day and stays quiet outside a terminal, in CI or when switched off", async () => {
     const cacheDir = tempDir();
-    const o = { bin: "livewebdata", npm: "livewebdata", version: "0.1.0", cacheDir, env: {}, isTTY: true, registry: server.url, now: 1_000_000 };
-    assert.equal(await updateNotice(o), "livewebdata 0.2.0 is available (you have 0.1.0). Update: npm install -g livewebdata");
+    const o = { bin: "example", npm: "example", version: "0.1.0", cacheDir, env: {}, isTTY: true, registry: server.url, now: 1_000_000 };
+    assert.equal(await updateNotice(o), "example 0.2.0 is available (you have 0.1.0). Update: npm install -g example");
     const n = server.seen.length;
     assert.ok(await updateNotice({ ...o, now: 1_000_000 + 60_000 }));
     assert.equal(server.seen.length, n);
-    for (const quiet of [{ isTTY: false }, { env: { CI: "true" } }, { env: { LIVEWEBDATA_NO_UPDATE_NOTIFIER: "1" } }, { version: "0.2.0" }]) {
+    for (const quiet of [{ isTTY: false }, { env: { CI: "true" } }, { env: { EXAMPLE_NO_UPDATE_NOTIFIER: "1" } }, { version: "0.2.0" }]) {
       assert.equal(await updateNotice({ ...o, ...quiet }), null, JSON.stringify(quiet));
     }
     writeFileSync(join(cacheDir, "update-check.json"), "not json");

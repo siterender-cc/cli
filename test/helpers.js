@@ -15,8 +15,8 @@ export const BRAND = JSON.parse(readFileSync(join(ROOT, "brand.json"), "utf8"));
 export function fixtureSpec(/** @type {{ serverUrl?: string }} */ o = {}) {
   return {
     openapi: "3.1.0",
-    info: { title: "Live Web Data API", version: "1.0.0" },
-    servers: [{ url: o.serverUrl ?? "https://livewebdata.com/api" }],
+    info: { title: "Example API", version: "1.0.0" },
+    servers: [{ url: o.serverUrl ?? "https://example.com/api" }],
     security: [{ bearerAuth: [] }],
     paths: {
       "/v1/contents": {

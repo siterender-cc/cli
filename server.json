@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "cc.siterender/siterender",
+  "title": "SiteRender API",
+  "description": "Fetch public web pages live and get clean Markdown, text or HTML.",
+  "version": "0.1.0",
+  "websiteUrl": "https://siterender.cc/docs/mcp",
+  "icons": [
+    {
+      "src": "https://siterender.cc/site-assets/siterender-cc/icon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://siterender.cc/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Your SiteRender API key as a bearer token: Bearer 1337_live_…",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

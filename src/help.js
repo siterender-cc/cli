@@ -1,6 +1,7 @@
 // @ts-check
 /** Help texts. Command help is generated from the spec: summary, description, flags, enums and the request examples. */
 import { kebab } from "./commands.js";
+import { envNames } from "./config.js";
 
 const WIDTH = 100;
 
@@ -71,6 +72,8 @@ export function exampleLine(/** @type {string} */ bin, /** @type {import("./comm
  */
 export function mainHelp(brand, commands, spec) {
   const b = brand.bin;
+  // Only the brand's own variables: the fallbacks (envNames) still work, but this site's help never names them.
+  const vars = envNames(brand);
   const rows = /** @type {[string, string][]} */ ([
     ...commands.map((c) => /** @type {[string, string]} */ ([[c.name, ...c.aliases].join(", "), String(c.op.summary ?? c.op.operationId ?? `${c.method.toUpperCase()} ${c.path}`)])),
     ["login", "Save your API key for this CLI"],
@@ -87,9 +90,9 @@ ${columns(rows)}
 
 Options for every command:
 ${columns([
-  ["--api-key <key>", `API key. Default: env LIVE_WEB_DATA_API_KEY, then the key saved by \`${b} login\``],
-  ["--base-url <url>", `API base URL. Default: env LIVE_WEB_DATA_API_BASE_URL, then ${brand.apiBaseUrl}`],
-  ["--spec-url <url>", `API spec URL. Default: env LIVE_WEB_DATA_SPEC_URL, then ${brand.specUrl}`],
+  ["--api-key <key>", `API key. Default: env ${vars.apiKey[0]}, then the key saved by \`${b} login\``],
+  ["--base-url <url>", `API base URL. Default: env ${vars.baseUrl[0]}, then ${brand.apiBaseUrl}`],
+  ["--spec-url <url>", `API spec URL. Default: env ${vars.specUrl[0]}, then ${brand.specUrl}`],
   ["--offline", "Use the cached or bundled spec, do not download it"],
   ["-o, --output <mode>", "json (default), text, or one field of each result, e.g. markdown, html, title"],
   ["-d, --data <json>", "Request body as JSON, @file or - (stdin); options override its fields"],

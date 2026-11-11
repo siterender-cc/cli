@@ -75,10 +75,10 @@ describe("requestUrl", () => {
     spec.paths["//evil.example/x"] = { get: { operationId: "getEvil" } };
     const commands = buildCommands(spec);
     const job = /** @type {any} */ (findCommand(commands, "job"));
-    const url = requestUrl("https://livewebdata.com/api", job, buildRequest(job, ["--id", "a/b?c", "--full"]));
-    assert.equal(url.href, "https://livewebdata.com/api/v1/jobs/a%2Fb%3Fc?full=true");
+    const url = requestUrl("https://example.com/api", job, buildRequest(job, ["--id", "a/b?c", "--full"]));
+    assert.equal(url.href, "https://example.com/api/v1/jobs/a%2Fb%3Fc?full=true");
     const evil = /** @type {any} */ (findCommand(commands, "evil"));
-    assert.equal(requestUrl("https://livewebdata.com/api", evil, buildRequest(evil, [])).origin, "https://livewebdata.com");
+    assert.equal(requestUrl("https://example.com/api", evil, buildRequest(evil, [])).origin, "https://example.com");
   });
 });
 

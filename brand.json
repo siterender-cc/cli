@@ -8,7 +8,8 @@
   "repo": "cli",
   "siteUrl": "https://siterender.cc",
   "docsUrl": "https://siterender.cc/docs",
-  "apiName": "Live Web Data API",
-  "apiBaseUrl": "https://livewebdata.com/api",
-  "specUrl": "https://livewebdata.com/openapi.json"
+  "apiName": "SiteRender API",
+  "envPrefix": "SITERENDER",
+  "apiBaseUrl": "https://siterender.cc/api",
+  "specUrl": "https://siterender.cc/openapi.json"
 }

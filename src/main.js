@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildCommands, buildRequest, findCommand, requestUrl, UsageError } from "./commands.js";
-import { cacheDir, configFile, envValue, loadBrand, loadVersion, removeApiKey, resolveApiKey, ROOT, saveApiKey } from "./config.js";
+import { cacheDir, configFile, envNames, envValue, loadBrand, loadVersion, removeApiKey, resolveApiKey, ROOT, saveApiKey } from "./config.js";
 import { commandHelp, mainHelp } from "./help.js";
 import { send } from "./http.js";
 import { json, render } from "./output.js";
@@ -119,10 +119,12 @@ function promptHidden(/** @type {string} */ question, /** @type {any} */ stdin, 
   });
 }
 
+/** @typedef {import("./config.js").Brand} Brand */
+
 const BUILTIN_HELP = {
-  login: (/** @type {string} */ b) => `Usage: ${b} login [--api-key <key>]\n\nSaves your API key (asked without echo, or piped in: echo $KEY | ${b} login) to ~/.config/${b}/config.json, readable\nonly by you. --api-key and env LIVE_WEB_DATA_API_KEY take precedence over the saved key.\n`,
-  logout: (/** @type {string} */ b) => `Usage: ${b} logout\n\nRemoves the saved API key.\n`,
-  spec: (/** @type {string} */ b) => `Usage: ${b} spec [refresh]\n\nShows where the commands come from: the live API spec, cached for an hour, or the copy bundled with this version.\n\`refresh\` downloads it now.\n`,
+  login: (/** @type {Brand} */ { bin: b, envPrefix }) => `Usage: ${b} login [--api-key <key>]\n\nSaves your API key (asked without echo, or piped in: echo $KEY | ${b} login) to ~/.config/${b}/config.json, readable\nonly by you. --api-key and env ${envNames({ envPrefix }).apiKey[0]} take precedence over the saved key.\n`,
+  logout: (/** @type {Brand} */ { bin: b }) => `Usage: ${b} logout\n\nRemoves the saved API key.\n`,
+  spec: (/** @type {Brand} */ { bin: b }) => `Usage: ${b} spec [refresh]\n\nShows where the commands come from: the live API spec, cached for an hour, or the copy bundled with this version.\n\`refresh\` downloads it now.\n`,
 };
 
 const ago = (/** @type {number} */ ms) => (ms < 90_000 ? `${Math.round(ms / 1000)} s ago` : ms < 5_400_000 ? `${Math.round(ms / 60_000)} min ago` : `${Math.round(ms / 3_600_000)} h ago`);
@@ -155,6 +157,7 @@ export async function main(argv, io) {
   }
 
   const userAgent = `${brand.bin}-cli/${version} (+https://${brand.domain})`;
+  const vars = envNames(brand);
   const cache = cacheDir(env, brand.bin);
   const notice = updateNotice({ bin: brand.bin, npm: brand.npm, version, cacheDir: cache, env, isTTY: !!stderr.isTTY, fetchImpl: io.fetchImpl });
   let code;
@@ -171,9 +174,10 @@ export async function main(argv, io) {
   /** @param {Globals} g */
   async function run(g) {
     const [name, ...args] = g.rest;
+    const specUrl = g.specUrl ?? envValue(env, ...vars.specUrl) ?? brand.specUrl;
     const spec = () =>
       loadSpec({
-        url: g.specUrl ?? envValue(env, "LIVE_WEB_DATA_SPEC_URL") ?? brand.specUrl,
+        url: specUrl,
         cacheDir: cache,
         bundledPath: join(root, "openapi.json"),
         offline: g.offline,
@@ -183,7 +187,7 @@ export async function main(argv, io) {
 
     const builtin = BUILTIN_HELP[/** @type {keyof typeof BUILTIN_HELP} */ (name === "help" ? args[0] : name)];
     if (builtin && (g.help || name === "help")) {
-      stdout.write(builtin(brand.bin));
+      stdout.write(builtin(brand));
       return 0;
     }
     if (name === "login") {
@@ -205,14 +209,15 @@ export async function main(argv, io) {
       const refresh = args[0] === "refresh";
       if (refresh && g.offline) throw new UsageError("spec refresh cannot run --offline");
       const loaded = refresh
-        ? await loadSpec({ url: g.specUrl ?? envValue(env, "LIVE_WEB_DATA_SPEC_URL") ?? brand.specUrl, cacheDir: cache, bundledPath: join(root, "openapi.json"), force: true, headers: { "User-Agent": userAgent }, fetchImpl: io.fetchImpl })
+        ? await loadSpec({ url: specUrl, cacheDir: cache, bundledPath: join(root, "openapi.json"), force: true, headers: { "User-Agent": userAgent }, fetchImpl: io.fetchImpl })
         : await spec();
       const commands = buildCommands(loaded.spec);
       stdout.write(
         [
           `Spec:     ${loaded.url}`,
           `Source:   ${loaded.source}${loaded.fetchedAt ? ` (downloaded or checked ${ago(Date.now() - loaded.fetchedAt)})` : " (bundled with this version)"}${loaded.etag ? `, ETag ${loaded.etag}` : ""}`,
-          `API:      ${loaded.spec.info?.title ?? "?"} ${loaded.spec.info?.version ?? ""}`.trimEnd(),
+          // The brand's API name, not the spec's title: every site domain serves the same document.
+          `API:      ${brand.apiName} ${loaded.spec.info?.version ?? ""}`.trimEnd(),
           `Commands: ${commands.map((c) => c.name).join(", ")}`,
           ...(loaded.error ? [`Note:     could not download it: ${loaded.error}`] : []),
           "",
@@ -245,12 +250,12 @@ export async function main(argv, io) {
       idempotencyKey = `cli_${randomUUID()}`;
       req.headers[command.idempotencyKey.path[0]] = idempotencyKey;
     }
-    const baseUrl = g.baseUrl ?? envValue(env, "LIVE_WEB_DATA_API_BASE_URL", "TENEO_API_BASE_URL") ?? brand.apiBaseUrl;
+    const baseUrl = g.baseUrl ?? envValue(env, ...vars.baseUrl) ?? brand.apiBaseUrl;
     if (!/^https?:\/\/[^/]/.test(baseUrl)) throw new UsageError(`the base URL must be http(s)://…, got "${baseUrl}"`);
     // The target comes from the base URL only: never from the spec's servers.
     const url = requestUrl(baseUrl, command, req);
-    const { apiKey } = resolveApiKey(g.apiKey, env, brand.bin);
-    if (!apiKey && command.needsAuth) stderr.write(`${brand.bin}: no API key. Run \`${brand.bin} login\` or set LIVE_WEB_DATA_API_KEY.\n`);
+    const { apiKey } = resolveApiKey(g.apiKey, env, brand);
+    if (!apiKey && command.needsAuth) stderr.write(`${brand.bin}: no API key. Run \`${brand.bin} login\` or set ${vars.apiKey[0]}.\n`);
 
     const outcome = await send({
       url,

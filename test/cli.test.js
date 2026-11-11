@@ -3,9 +3,12 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { after, before, describe, it } from "node:test";
+import { envNames } from "../src/config.js";
 import { BRAND, cliEnv, fixtureSpec, runCli, sendJson, startServer, tempDir } from "./helpers.js";
 
 const KEY = "1337_test_cli000000000000000000000000";
+/** This brand's own variables, e.g. FETCHMCP_API_KEY: the tests set only those. */
+const { apiKey: [KEY_VAR], baseUrl: [BASE_URL_VAR], specUrl: [SPEC_URL_VAR] } = envNames(BRAND);
 
 /** @type {Awaited<ReturnType<typeof startServer>>} */
 let api;
@@ -33,12 +36,12 @@ after(() => api.close());
 
 /** Env against the test server, with a valid key unless `extra` says otherwise. */
 const env = (/** @type {string} */ home, /** @type {Record<string, string>} */ extra = {}) =>
-  cliEnv(home, { LIVE_WEB_DATA_SPEC_URL: `${api.url}/openapi.json`, LIVE_WEB_DATA_API_BASE_URL: `${api.url}/api`, LIVE_WEB_DATA_API_KEY: KEY, ...extra });
+  cliEnv(home, { [SPEC_URL_VAR]: `${api.url}/openapi.json`, [BASE_URL_VAR]: `${api.url}/api`, [KEY_VAR]: KEY, ...extra });
 /** The same without a key. */
 const noKey = (/** @type {string} */ home, /** @type {Record<string, string>} */ extra = {}) => {
   /** @type {Record<string, string>} */
   const rest = env(home);
-  delete rest.LIVE_WEB_DATA_API_KEY;
+  delete rest[KEY_VAR];
   return { ...rest, ...extra };
 };
 
@@ -79,7 +82,7 @@ describe("commands follow the spec", () => {
 
   it("without the network the commands come from the bundled spec", async () => {
     const home = tempDir();
-    const r = await runCli(["--help"], { env: cliEnv(home, { LIVE_WEB_DATA_SPEC_URL: "http://127.0.0.1:9/openapi.json" }) });
+    const r = await runCli(["--help"], { env: cliEnv(home, { [SPEC_URL_VAR]: "http://127.0.0.1:9/openapi.json" }) });
     assert.equal(r.code, 0, r.stderr);
     assert.match(r.stdout.replace(/\s+/g, " "), /now: the copy bundled with this version/);
     assert.match(r.stdout, /account/);
@@ -189,7 +192,7 @@ describe("output and exit codes", () => {
       assert.equal(r.code, 2, `${args.join(" ")}: ${r.stderr}`);
       assert.ok(r.stderr.startsWith(`${BRAND.bin}: `), r.stderr);
     }
-    const net = await runCli(["fetch", "https://a.example", "--timeout", "2"], { env: env(home, { LIVE_WEB_DATA_API_BASE_URL: "http://127.0.0.1:9/api" }) });
+    const net = await runCli(["fetch", "https://a.example", "--timeout", "2"], { env: env(home, { [BASE_URL_VAR]: "http://127.0.0.1:9/api" }) });
     assert.equal(net.code, 3);
     const body = JSON.parse(net.stderr);
     assert.equal(body.error.tag, "CONNECTION_ERROR");
@@ -213,7 +216,7 @@ describe("login", () => {
     assert.deepEqual(JSON.parse(readFileSync(file, "utf8")), { apiKey: KEY });
 
     assert.equal((await runCli(["account"], { env: noKey(home) })).code, 0);
-    assert.equal((await runCli(["account"], { env: noKey(home, { LIVE_WEB_DATA_API_KEY: "1337_test_wrong" }) })).code, 1);
+    assert.equal((await runCli(["account"], { env: noKey(home, { [KEY_VAR]: "1337_test_wrong" }) })).code, 1);
     assert.equal((await runCli(["account", "--api-key", "1337_test_wrong"], { env: noKey(home) })).code, 1);
 
     const out = await runCli(["logout"], { env: noKey(home) });
@@ -232,7 +235,7 @@ describe("spec command", () => {
     const again = await runCli(["spec", "refresh"], { env: env(home) });
     assert.equal(again.code, 0);
     assert.match(again.stdout, /ETag "v1"/);
-    const down = await runCli(["spec", "refresh"], { env: env(home, { LIVE_WEB_DATA_SPEC_URL: "http://127.0.0.1:9/openapi.json" }) });
+    const down = await runCli(["spec", "refresh"], { env: env(home, { [SPEC_URL_VAR]: "http://127.0.0.1:9/openapi.json" }) });
     assert.equal(down.code, 3);
     assert.match(down.stdout, /could not download it/);
   });

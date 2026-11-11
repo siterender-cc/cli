@@ -1,17 +1,17 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Live Web Data API",
+    "title": "SiteRender API",
     "version": "1.0.0",
     "summary": "Live web pages as clean Markdown, text or HTML for AI agents.",
     "description": "Fetch public web pages through our fetch network and get clean Markdown, text or HTML back.\n\nAuthentication: `Authorization: Bearer <api_key>`.\n\n**Per-URL errors** (HTTP 200, in `statuses[].error.tag`, 0 credits): `CRAWL_NOT_FOUND`, `SOURCE_NOT_AVAILABLE`, `CRAWL_LIVECRAWL_TIMEOUT`, `CRAWL_NOT_RENDERED`, `UNSUPPORTED_CONTENT_TYPE`, `CRAWL_UNKNOWN_ERROR`, `SOURCE_BLOCKED`, `BROWSER_UNAVAILABLE`, `RATE_LIMITED`, and `RESTRICTED_TARGET` for blocked URLs inside a multi-URL request.\n\nUp to 10 URLs per request; rate limits count URLs.",
     "contact": {
-      "email": "support@livewebdata.com"
+      "email": "support@siterender.cc"
     }
   },
   "servers": [
     {
-      "url": "https://livewebdata.com/api",
+      "url": "https://siterender.cc/api",
       "description": "Production"
     }
   ],
