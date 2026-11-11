@@ -36,6 +36,35 @@ siterender fetch --help                                           # every option
 A fetch that is still running after about 100 seconds is collected automatically with the same
 `Idempotency-Key`, so it is charged once.
 
+## MCP server
+
+The SiteRender API is also a remote MCP server (Streamable HTTP) at `https://siterender.cc/mcp`, with the tools
+`get_page_contents` and `get_account_status`. It takes the same API key as a bearer token.
+
+```bash
+claude mcp add --transport http siterender https://siterender.cc/mcp \
+  --header "Authorization: Bearer $SITERENDER_API_KEY"
+```
+
+Any other client: URL `https://siterender.cc/mcp`, header `Authorization: Bearer <key>`. Config for Cursor, VS Code and
+Claude Desktop: [MCP docs](https://siterender.cc/docs/mcp). The server's entry for the MCP Registry is [server.json](server.json)
+(`cc.siterender/siterender`).
+
+## Agent plugin and skill
+
+This repo is also a plugin for Claude Code, Grok Build and Gemini CLI, and holds an agent skill. Each one connects the
+MCP server above and teaches the agent when to fetch a page with it or with `siterender`.
+
+```bash
+npx skills add siterender-cc/cli                                    # the skill, for any agent that reads SKILL.md
+claude plugin marketplace add siterender-cc/cli && claude plugin install siterender@siterender
+gemini extensions install https://github.com/siterender-cc/cli
+```
+
+Network and credentials: the plugin calls `https://siterender.cc/mcp` only, and the CLI `https://siterender.cc/api` and
+`https://siterender.cc/openapi.json`. Both need one credential, your SiteRender API key, read from `SITERENDER_API_KEY`. No hooks, no
+scripts run on install.
+
 ## The commands follow the live API
 
 `siterender` builds its commands and options from the API's OpenAPI document at

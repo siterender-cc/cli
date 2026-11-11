@@ -1,0 +1,21 @@
+{
+  "name": "siterender",
+  "version": "0.1.0",
+  "description": "Fetch public web pages live as clean Markdown, text or HTML through the SiteRender API: its remote MCP server and the siterender CLI.",
+  "mcpServers": {
+    "siterender": {
+      "httpUrl": "https://siterender.cc/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SITERENDER_API_KEY}"
+      }
+    }
+  },
+  "settings": [
+    {
+      "name": "API key",
+      "description": "Your SiteRender API key, from https://siterender.cc",
+      "envVar": "SITERENDER_API_KEY",
+      "sensitive": true
+    }
+  ]
+}

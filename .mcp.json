@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "siterender": {
+      "type": "http",
+      "url": "https://siterender.cc/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SITERENDER_API_KEY}"
+      }
+    }
+  }
+}

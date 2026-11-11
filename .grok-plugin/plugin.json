@@ -1,0 +1,19 @@
+{
+  "name": "siterender",
+  "version": "0.1.0",
+  "description": "Fetch public web pages live as clean Markdown, text or HTML through the SiteRender API: its remote MCP server and the siterender CLI.",
+  "author": {
+    "name": "SiteRender",
+    "url": "https://siterender.cc"
+  },
+  "homepage": "https://siterender.cc",
+  "repository": "https://github.com/siterender-cc/cli",
+  "license": "MIT",
+  "keywords": [
+    "siterender",
+    "web-fetch",
+    "markdown",
+    "mcp",
+    "cli"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "siterender",
+  "owner": {
+    "name": "SiteRender",
+    "url": "https://siterender.cc"
+  },
+  "metadata": {
+    "description": "The SiteRender plugin: SiteRender API MCP server and skill."
+  },
+  "plugins": [
+    {
+      "name": "siterender",
+      "source": "./",
+      "description": "Fetch public web pages live as clean Markdown, text or HTML through the SiteRender API: its remote MCP server and the siterender CLI."
+    }
+  ]
+}
