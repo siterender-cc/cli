@@ -22,7 +22,7 @@
     "url": "git+https://github.com/siterender-cc/cli.git"
   },
   "license": "MIT",
-  "author": "Teneo Labs Inc.",
+  "author": "siterender.cc",
   "type": "module",
   "bin": {
     "siterender": "bin/cli.js"
