@@ -24,7 +24,7 @@ const SITE = {
 };
 
 /** The fallback names: read after the site's own, never named in help or errors. */
-const FALLBACKS = /LIVE_WEB_DATA|TENEO/;
+const FALLBACKS = /LIVE_WEB_DATA/;
 
 /**
  * Runs main() in-process as SITE's CLI (a package root with its brand.json and the fixture spec bundled). Every
@@ -57,46 +57,48 @@ async function runSite(/** @type {string[]} */ args, /** @type {Record<string, s
 }
 
 describe("environment variables", () => {
-  it("the site's own first, then LIVE_WEB_DATA_*, then the legacy TENEO_* (none for the spec URL)", () => {
+  it("the site's own first, then LIVE_WEB_DATA_*", () => {
     assert.deepEqual(envNames(SITE), {
-      apiKey: ["EXAMPLE_API_KEY", "LIVE_WEB_DATA_API_KEY", "TENEO_API_KEY"],
-      baseUrl: ["EXAMPLE_API_BASE_URL", "LIVE_WEB_DATA_API_BASE_URL", "TENEO_API_BASE_URL"],
+      apiKey: ["EXAMPLE_API_KEY", "LIVE_WEB_DATA_API_KEY"],
+      baseUrl: ["EXAMPLE_API_BASE_URL", "LIVE_WEB_DATA_API_BASE_URL"],
       specUrl: ["EXAMPLE_SPEC_URL", "LIVE_WEB_DATA_SPEC_URL"],
     });
   });
 
   it("each name once when the site's own prefix is LIVE_WEB_DATA", () => {
     assert.deepEqual(envNames({ envPrefix: "LIVE_WEB_DATA" }), {
-      apiKey: ["LIVE_WEB_DATA_API_KEY", "TENEO_API_KEY"],
-      baseUrl: ["LIVE_WEB_DATA_API_BASE_URL", "TENEO_API_BASE_URL"],
+      apiKey: ["LIVE_WEB_DATA_API_KEY"],
+      baseUrl: ["LIVE_WEB_DATA_API_BASE_URL"],
       specUrl: ["LIVE_WEB_DATA_SPEC_URL"],
     });
   });
 
-  it("the key: --api-key, the site's variable, LIVE_WEB_DATA_API_KEY, TENEO_API_KEY, the saved key; `from` names the one used", () => {
+  it("the key: --api-key, the site's variable, LIVE_WEB_DATA_API_KEY, the saved key; `from` names the one used", () => {
     const env = cliEnv(tempDir());
     const file = configFile(env, SITE.bin);
     saveApiKey(file, "saved");
-    const all = { ...env, EXAMPLE_API_KEY: "own", LIVE_WEB_DATA_API_KEY: "lwd", TENEO_API_KEY: "legacy" };
+    const all = { ...env, EXAMPLE_API_KEY: "own", LIVE_WEB_DATA_API_KEY: "lwd", OTHER_API_KEY: "legacy" };
     assert.deepEqual(resolveApiKey("flag", all, SITE), { apiKey: "flag", from: "--api-key" });
     assert.deepEqual(resolveApiKey(undefined, all, SITE), { apiKey: "own", from: "EXAMPLE_API_KEY" });
     assert.deepEqual(resolveApiKey(undefined, { ...all, EXAMPLE_API_KEY: "" }, SITE), { apiKey: "lwd", from: "LIVE_WEB_DATA_API_KEY" });
-    assert.deepEqual(resolveApiKey(undefined, { ...env, TENEO_API_KEY: "legacy" }, SITE), { apiKey: "legacy", from: "TENEO_API_KEY" });
+    // No other variable is read: a key in any other variable is never picked up or sent.
+    assert.deepEqual(resolveApiKey(undefined, { ...env, OTHER_API_KEY: "legacy" }, SITE), { apiKey: "saved", from: file });
     assert.deepEqual(resolveApiKey(undefined, env, SITE), { apiKey: "saved", from: file });
   });
 
-  it("requests go to the site's own domain; its variables win over LIVE_WEB_DATA_*, which win over TENEO_*", async () => {
+  it("requests go to the site's own domain; its variables win over LIVE_WEB_DATA_*; no other variable is read", async () => {
     const plain = await runSite(["account", "--offline"], { EXAMPLE_API_KEY: "own" });
     assert.equal(plain.code, 0, plain.stderr);
     assert.equal(plain.calls[0]?.url, "https://example.com/api/v1/account");
     assert.equal(plain.calls[0]?.headers["User-Agent"], "example-cli/0.1.0 (+https://example.com)");
 
     const sent = async (/** @type {Record<string, string>} */ extra) => (await runSite(["account", "--offline"], extra)).calls.map((c) => `${c.url} ${c.headers.Authorization}`);
-    const legacy = { TENEO_API_BASE_URL: "https://legacy.test/api", TENEO_API_KEY: "legacy" };
+    const legacy = { OTHER_API_BASE_URL: "https://legacy.test/api", OTHER_API_KEY: "legacy" };
     const lwd = { ...legacy, LIVE_WEB_DATA_API_BASE_URL: "https://lwd.test/api", LIVE_WEB_DATA_API_KEY: "lwd" };
     assert.deepEqual(await sent({ ...lwd, EXAMPLE_API_BASE_URL: "https://own.test/api", EXAMPLE_API_KEY: "own" }), ["https://own.test/api/v1/account Bearer own"]);
     assert.deepEqual(await sent(lwd), ["https://lwd.test/api/v1/account Bearer lwd"]);
-    assert.deepEqual(await sent(legacy), ["https://legacy.test/api/v1/account Bearer legacy"]);
+    // Any other variable is ignored: neither its base URL nor its key is used.
+    for (const line of await sent(legacy)) assert.ok(line.startsWith("https://example.com/api/") && !line.includes("legacy"), line);
   });
 
   it("the spec comes from the site's own domain; EXAMPLE_SPEC_URL wins over LIVE_WEB_DATA_SPEC_URL", async () => {

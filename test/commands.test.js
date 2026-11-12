@@ -84,6 +84,6 @@ describe("requestUrl", () => {
 
 describe("help", () => {
   it("turns the first request example into a command line", () => {
-    assert.equal(exampleLine("fetchmcp", fetchCmd()), "fetchmcp fetch https://example.com/article");
+    assert.equal(exampleLine("example", fetchCmd()), "example fetch https://example.com/article");
   });
 });

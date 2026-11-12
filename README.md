@@ -61,9 +61,10 @@ claude plugin marketplace add siterender-cc/cli && claude plugin install siteren
 gemini extensions install https://github.com/siterender-cc/cli
 ```
 
-Network and credentials: the plugin calls `https://siterender.cc/mcp` only, and the CLI `https://siterender.cc/api` and
-`https://siterender.cc/openapi.json`. Both need one credential, your SiteRender API key, read from `SITERENDER_API_KEY`. No hooks, no
-scripts run on install.
+Network and credentials: the plugin calls `https://siterender.cc/mcp` only. The CLI calls `https://siterender.cc/api` and
+`https://siterender.cc/openapi.json`, and `https://registry.npmjs.org` (`npx` and a once-a-day update check, off with
+`SITERENDER_NO_UPDATE_NOTIFIER=1`). Both need one credential, your SiteRender API key,
+read from `SITERENDER_API_KEY` or saved by `siterender login`. No hooks, no scripts run on install.
 
 ## The commands follow the live API
 

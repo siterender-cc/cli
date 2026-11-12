@@ -65,7 +65,7 @@ describe("update notice", () => {
     assert.ok(newer("0.1.10", "0.1.9"));
     assert.ok(!newer("0.1.0", "0.1.0"));
     assert.ok(newer("1.0.0", "1.0.0-rc.1"));
-    assert.equal(noUpdateVar("agentfetch"), "AGENTFETCH_NO_UPDATE_NOTIFIER");
+    assert.equal(noUpdateVar("my-tool"), "MY_TOOL_NO_UPDATE_NOTIFIER");
   });
 
   it("asks the registry at most once a day and stays quiet outside a terminal, in CI or when switched off", async () => {

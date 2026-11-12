@@ -10,7 +10,7 @@ import { join } from "node:path";
 export const UPDATE_CHECK_MS = 24 * 60 * 60 * 1000;
 export const REGISTRY = "https://registry.npmjs.org";
 
-/** FETCHMCP_NO_UPDATE_NOTIFIER for bin "fetchmcp". */
+/** EXAMPLE_NO_UPDATE_NOTIFIER for bin "example". */
 export const noUpdateVar = (/** @type {string} */ bin) => `${bin.toUpperCase().replace(/[^A-Z0-9]+/g, "_")}_NO_UPDATE_NOTIFIER`;
 
 /** a > b for x.y.z versions (a pre-release suffix counts as older). */

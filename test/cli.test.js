@@ -7,7 +7,7 @@ import { envNames } from "../src/config.js";
 import { BRAND, cliEnv, fixtureSpec, runCli, sendJson, startServer, tempDir } from "./helpers.js";
 
 const KEY = "1337_test_cli000000000000000000000000";
-/** This brand's own variables, e.g. FETCHMCP_API_KEY: the tests set only those. */
+/** This brand's own variables, e.g. EXAMPLE_API_KEY: the tests set only those. */
 const { apiKey: [KEY_VAR], baseUrl: [BASE_URL_VAR], specUrl: [SPEC_URL_VAR] } = envNames(BRAND);
 
 /** @type {Awaited<ReturnType<typeof startServer>>} */

@@ -10,17 +10,17 @@ import { fileURLToPath } from "node:url";
 
 /**
  * @typedef {object} Brand
- * @property {string} name        site name, e.g. "FetchMCP"
+ * @property {string} name        site name, e.g. "Example"
  * @property {string} tagline
- * @property {string} domain      e.g. "fetchmcp.net"
- * @property {string} bin         command name, e.g. "fetchmcp"
+ * @property {string} domain      e.g. "example.com"
+ * @property {string} bin         command name, e.g. "example"
  * @property {string} npm         npm package name
  * @property {string} org         GitHub org
  * @property {string} repo        GitHub repo in the org
  * @property {string} siteUrl
  * @property {string} docsUrl
- * @property {string} apiName     e.g. "FetchMCP API"
- * @property {string} envPrefix   e.g. "FETCHMCP": FETCHMCP_API_KEY, FETCHMCP_API_BASE_URL, FETCHMCP_SPEC_URL
+ * @property {string} apiName     e.g. "Example API"
+ * @property {string} envPrefix   e.g. "EXAMPLE": EXAMPLE_API_KEY, EXAMPLE_API_BASE_URL, EXAMPLE_SPEC_URL
  * @property {string} apiBaseUrl  where requests (and the key) go, on the site's own domain
  * @property {string} specUrl     where the commands come from
  */
@@ -56,8 +56,8 @@ export function envValue(/** @type {Env} */ env, /** @type {string[]} */ ...name
 export function envNames(/** @type {Pick<Brand, "envPrefix">} */ brand) {
   const names = (/** @type {string} */ suffix, /** @type {string[]} */ fallbacks) => [...new Set([brand.envPrefix, ...fallbacks].map((p) => `${p}_${suffix}`))];
   return {
-    apiKey: names("API_KEY", ["LIVE_WEB_DATA", "TENEO"]),
-    baseUrl: names("API_BASE_URL", ["LIVE_WEB_DATA", "TENEO"]),
+    apiKey: names("API_KEY", ["LIVE_WEB_DATA"]),
+    baseUrl: names("API_BASE_URL", ["LIVE_WEB_DATA"]),
     specUrl: names("SPEC_URL", ["LIVE_WEB_DATA"]),
   };
 }
@@ -105,8 +105,7 @@ export function removeApiKey(/** @type {string} */ file) {
 }
 
 /**
- * The key, in this order: --api-key, <envPrefix>_API_KEY, LIVE_WEB_DATA_API_KEY, the legacy TENEO_API_KEY, the saved
- * key. `from` names where it came from: the flag, the variable that was set, or the config file.
+ * The key, in this order: --api-key, <envPrefix>_API_KEY, LIVE_WEB_DATA_API_KEY, the saved key. `from` names where it came from: the flag, the variable that was set, or the config file.
  * @returns {{ apiKey?: string, from?: string }}
  */
 export function resolveApiKey(/** @type {string | undefined} */ flag, /** @type {Env} */ env, /** @type {Pick<Brand, "bin" | "envPrefix">} */ brand) {
