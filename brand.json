@@ -1,6 +1,5 @@
 {
   "name": "SiteRender",
-  "tagline": "What a page sends, what a browser builds, and which one you actually need.",
   "domain": "siterender.cc",
   "bin": "siterender",
   "npm": "@siterender-cc/cli",

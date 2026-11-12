@@ -80,8 +80,8 @@ export function mainHelp(brand, commands, spec) {
     ["logout", "Remove the saved API key"],
     ["spec [refresh]", "Show or refresh the API spec the commands come from"],
   ]);
-  return `${brand.name}: ${brand.tagline}
-${wrap(`The ${b} command line client for the ${brand.apiName}: live web pages as clean Markdown, text or HTML.`, 0)}
+  // The first line says what the tool does, not the site's blog tagline.
+  return `${wrap(`The ${b} command line client for the ${brand.apiName}: live web pages as clean Markdown, text or HTML.`, 0)}
 
 Usage: ${b} <command> [options]
 

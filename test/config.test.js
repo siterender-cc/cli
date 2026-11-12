@@ -116,7 +116,8 @@ describe("environment variables", () => {
     const help = await runSite(["--help", "--offline"]);
     assert.equal(help.code, 0, help.stderr);
     const flat = help.stdout.replace(/\s+/g, " ");
-    assert.match(flat, /The example command line client for the Example API/);
+    // The first line says what the tool does, not a tagline.
+    assert.ok(flat.startsWith("The example command line client for the Example API: live web pages as clean Markdown, text or HTML. Usage: example <command>"), help.stdout);
     assert.match(flat, /Default: env EXAMPLE_API_KEY, then the key saved by `example login`/);
     assert.match(flat, /Default: env EXAMPLE_API_BASE_URL, then https:\/\/example\.com\/api/);
     assert.match(flat, /Default: env EXAMPLE_SPEC_URL, then https:\/\/example\.com\/openapi\.json/);

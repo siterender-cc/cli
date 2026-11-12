@@ -11,7 +11,6 @@ import { fileURLToPath } from "node:url";
 /**
  * @typedef {object} Brand
  * @property {string} name        site name, e.g. "Example"
- * @property {string} tagline
  * @property {string} domain      e.g. "example.com"
  * @property {string} bin         command name, e.g. "example"
  * @property {string} npm         npm package name

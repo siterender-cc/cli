@@ -1,7 +1,5 @@
 # SiteRender CLI
 
-What a page sends, what a browser builds, and which one you actually need.
-
 `siterender` fetches live web pages as clean Markdown, text or HTML, straight from your terminal or your agent's shell.
 It is the command line client for the [SiteRender API](https://siterender.cc).
 
