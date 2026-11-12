@@ -22,10 +22,12 @@
   ],
   "tags": [
     {
-      "name": "Contents"
+      "name": "Contents",
+      "description": "Fetch 1–10 public URLs live and get each page's main content as Markdown, text or HTML."
     },
     {
-      "name": "Account"
+      "name": "Account",
+      "description": "Plan, credits and rate limit of the calling key. Free."
     }
   ],
   "paths": {
@@ -78,7 +80,7 @@
                   "summary": "One URL",
                   "value": {
                     "urls": [
-                      "https://example.com/article"
+                      "https://en.wikipedia.org/wiki/Web_scraping"
                     ]
                   }
                 },
@@ -86,14 +88,16 @@
                   "summary": "All options",
                   "value": {
                     "urls": [
-                      "https://example.com/article"
+                      "https://en.wikipedia.org/wiki/Web_scraping"
                     ],
                     "countryCode": "de",
                     "text": {
                       "maxCharacters": 50000,
                       "verbosity": "compact"
                     },
-                    "livecrawlTimeout": 15000
+                    "html": true,
+                    "render": false,
+                    "livecrawlTimeout": 60000
                   }
                 },
                 "multi": {
@@ -118,31 +122,36 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "X-Credits-Remaining": {
                 "description": "Credit balance after this request.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 62339
               },
               "X-RateLimit-Limit": {
                 "description": "URLs you can send at once (bucket size, = rateLimit.burst in GET /v1/account). The bucket refills at rateLimit.requestsPerSecond URLs per second.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 4
               },
               "X-RateLimit-Remaining": {
                 "description": "URLs you can send right now.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 3
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -154,23 +163,24 @@
                   "requestId": "req_01JEXAMPLE0000000000000",
                   "results": [
                     {
-                      "id": "https://example.com/article",
-                      "url": "https://example.com/article",
-                      "title": "Article",
+                      "id": "https://en.wikipedia.org/wiki/Web_scraping",
+                      "url": "https://en.wikipedia.org/wiki/Web_scraping",
+                      "title": "Web scraping - Wikipedia",
                       "author": null,
                       "publishedDate": null,
                       "image": null,
-                      "favicon": "https://example.com/favicon.ico",
-                      "markdown": "# Article\n\n…",
-                      "text": "Article\n\n…",
-                      "html": "<!doctype html>…"
+                      "favicon": "https://en.wikipedia.org/static/favicon/wikipedia.ico",
+                      "markdown": "# Web scraping - Wikipedia\n\n…",
+                      "text": "Web scraping - Wikipedia\n\n…",
+                      "textTruncated": false
                     }
                   ],
                   "statuses": [
                     {
-                      "id": "https://example.com/article",
+                      "id": "https://en.wikipedia.org/wiki/Web_scraping",
                       "status": "success",
                       "source": "livecrawled",
+                      "fetchedAt": "2026-11-12T09:30:02.118Z",
                       "httpStatusCode": 200,
                       "strategy": "fast",
                       "credits": 1,
@@ -189,19 +199,22 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Retry-After": {
                 "description": "Seconds to wait: before retrying a 429, or before repeating a 202 with the same Idempotency-Key.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 1
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -212,7 +225,7 @@
                 "example": {
                   "status": "pending",
                   "requestId": "req_01JEXAMPLE0000000000000",
-                  "idempotencyKey": "lwda_3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10",
+                  "idempotencyKey": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10",
                   "retryAfter": 1,
                   "message": "Still fetching. Send the same request again with the same Idempotency-Key header to get the result; it is not charged again."
                 }
@@ -226,13 +239,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -282,13 +297,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -302,7 +319,7 @@
                       "error": {
                         "code": 401,
                         "tag": "UNAUTHORIZED",
-                        "message": "Missing or invalid API key."
+                        "message": "Missing API key. Send `Authorization: Bearer <api_key>`."
                       },
                       "requestId": "req_01JEXAMPLE0000000000000"
                     }
@@ -318,13 +335,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -338,7 +357,7 @@
                       "error": {
                         "code": 402,
                         "tag": "INSUFFICIENT_CREDITS",
-                        "message": "Not enough credits. Top up or upgrade. On the free test the body adds nextResetAt and freeTierEnded."
+                        "message": "Not enough credits. Top up or upgrade your plan."
                       },
                       "requestId": "req_01JEXAMPLE0000000000000"
                     }
@@ -354,13 +373,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -374,7 +395,7 @@
                       "error": {
                         "code": 403,
                         "tag": "KEY_SUSPENDED",
-                        "message": "The key or account is suspended or not yet approved."
+                        "message": "API access for this account is suspended. Contact support."
                       },
                       "requestId": "req_01JEXAMPLE0000000000000"
                     }
@@ -400,13 +421,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -436,7 +459,8 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               }
             },
             "content": {
@@ -466,31 +490,36 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "X-RateLimit-Limit": {
                 "description": "URLs you can send at once (bucket size, = rateLimit.burst in GET /v1/account). The bucket refills at rateLimit.requestsPerSecond URLs per second.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 4
               },
               "X-RateLimit-Remaining": {
                 "description": "URLs you can send right now.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 0
               },
               "Retry-After": {
                 "description": "Seconds to wait: before retrying a 429, or before repeating a 202 with the same Idempotency-Key.",
                 "schema": {
                   "type": "integer"
-                }
+                },
+                "example": 1
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -520,13 +549,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -556,13 +587,15 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               },
               "Idempotency-Key": {
                 "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
                 "schema": {
                   "type": "string"
-                }
+                },
+                "example": "3f1c2b7e-0d4a-4c1e-9a55-2b8f0e6c7d10"
               }
             },
             "content": {
@@ -611,15 +644,15 @@
                   "plan": "starter",
                   "status": "active",
                   "credits": {
-                    "plan": 81234,
+                    "plan": 52340,
                     "topup": 10000,
-                    "total": 91234
+                    "total": 62340
                   },
                   "rateLimit": {
                     "requestsPerSecond": 2,
                     "burst": 4
                   },
-                  "periodEndsAt": "2026-11-01T00:00:00Z"
+                  "periodEndsAt": "2026-12-01T00:00:00Z"
                 }
               }
             }
@@ -631,13 +664,8 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
-              },
-              "Idempotency-Key": {
-                "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
-                "schema": {
-                  "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               }
             },
             "content": {
@@ -651,7 +679,7 @@
                       "error": {
                         "code": 401,
                         "tag": "UNAUTHORIZED",
-                        "message": "Missing or invalid API key."
+                        "message": "Missing API key. Send `Authorization: Bearer <api_key>`."
                       },
                       "requestId": "req_01JEXAMPLE0000000000000"
                     }
@@ -667,13 +695,8 @@
                 "description": "Same as requestId in the body.",
                 "schema": {
                   "type": "string"
-                }
-              },
-              "Idempotency-Key": {
-                "description": "The request's Idempotency-Key: yours, or one the API created when you sent none. On every answer (200, 202, errors) except a 400 for a malformed key and a 413 for a body over 10 MiB (refused unread). Repeat a 202 with it.",
-                "schema": {
-                  "type": "string"
-                }
+                },
+                "example": "req_01JEXAMPLE0000000000000"
               }
             },
             "content": {
@@ -687,7 +710,7 @@
                       "error": {
                         "code": 403,
                         "tag": "KEY_SUSPENDED",
-                        "message": "The key or account is suspended or not yet approved."
+                        "message": "API access for this account is suspended. Contact support."
                       },
                       "requestId": "req_01JEXAMPLE0000000000000"
                     }
