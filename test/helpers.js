@@ -101,7 +101,7 @@ export const sendJson = (/** @type {import("node:http").ServerResponse} */ res, 
   res.end(JSON.stringify(body));
 };
 
-export const tempDir = () => mkdtempSync(join(tmpdir(), "lwda-cli-"));
+export const tempDir = () => mkdtempSync(join(tmpdir(), "cli-test-"));
 
 /** Env for a CLI run: an empty home, no key, no update check, the given spec and API URLs. */
 export function cliEnv(/** @type {string} */ home, /** @type {Record<string, string>} */ extra = {}) {
