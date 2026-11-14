@@ -361,6 +361,17 @@
                       },
                       "requestId": "req_01JEXAMPLE0000000000000"
                     }
+                  },
+                  "INSUFFICIENT_CREDITS_SEVERAL_URLS": {
+                    "summary": "Several URLs",
+                    "value": {
+                      "error": {
+                        "code": 402,
+                        "tag": "INSUFFICIENT_CREDITS",
+                        "message": "Not enough credits for 3 URLs. Top up or upgrade your plan."
+                      },
+                      "requestId": "req_01JEXAMPLE0000000000000"
+                    }
                   }
                 }
               }
@@ -1111,7 +1122,7 @@
                 "type": "boolean"
               },
               "upgradeUrl": {
-                "description": "Free test, 402 only: where to choose a plan.",
+                "description": "Free test, 402 only: where to choose a plan, the billing page of the site the request was sent to.",
                 "type": "string"
               }
             },
