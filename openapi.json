@@ -1023,14 +1023,14 @@
             "type": "integer",
             "minimum": -9007199254740991,
             "maximum": 9007199254740991,
-            "description": "Credits charged for this URL: 1 standard, 2 retried, 3 rendered, 5 rendered + retried, 0 on error and for a short page delivered with thin: true (a success, not an error)."
+            "description": "Credits charged for this URL: 1 standard, 2 retried, 3 rendered, 5 rendered + retried, 0 on error and for a near-empty page delivered with thin: true (a success, not an error)."
           },
           "fallbackUsed": {
             "description": "Present (true) only when the browser fallback ran for this URL: with strategy \"browser\" the content is that render (fast → render); with another strategy, or on error, rendering was tried and did not help.",
             "type": "boolean"
           },
           "thin": {
-            "description": "Present (true) only for a short page delivered at 0 credits: fewer than 500 characters of visible text even after rendering. The result holds only that visible text. A success, not an error.",
+            "description": "Present (true) only for a near-empty page delivered at 0 credits: fewer than 50 characters of visible text even after rendering. The result holds only that visible text. A success, not an error.",
             "type": "boolean"
           },
           "error": {
